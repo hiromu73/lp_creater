@@ -31,8 +31,7 @@ const Promptare = () => {
   //   shape: { borderRadius: 40 },
   // };
 
-  const { urls, setUrls } = useLpContext();
-  console.log(`urls.length -- ${urls.length}`);
+  const { urls, setUrls, files, setFiles } = useLpContext();
 
   return (
     <Box sx={{ justifyItems: "center", height: "100%" }}>
@@ -52,20 +51,20 @@ const Promptare = () => {
           <Urlfield urls={urls} setUrls={setUrls} />
         </Paper>
       </Box>
-      <Box sx={{ width: "50%"}}>
+      <Box sx={{ width: "50%" }}>
         {urls.length > 0 && (
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             {urls.map((url, index) => (
               <Box key={index}>
                 <Box key={index}>
                   <Paper elevation={3} sx={{ m: 2, p: 2, bgcolor: "#333333" }}>
-                  <IconButton onClick={() => setUrls(urls.filter((_, i) => i !== index))}>
-                    <RemoveCircleOutlineIcon color="error"/>
-                  </IconButton>
-                  <a href={url} target="_blank" rel="noopener noreferrer">
-                    {url} + testUrl
+                    <IconButton onClick={() => setUrls(urls.filter((_, i) => i !== index))}>
+                      <RemoveCircleOutlineIcon color="error" />
+                    </IconButton>
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      {url} + testUrl
                     </a>
-                    </Paper>
+                  </Paper>
                 </Box>
               </Box>
             ))}
@@ -75,7 +74,7 @@ const Promptare = () => {
 
       <Typography variant="subtitle1">Reference File</Typography>
       <Box sx={{ width: "48%" }}>
-        <FileUpload />
+        <FileUpload files={files} setFiles={setFiles} />
       </Box>
     </Box>
   );

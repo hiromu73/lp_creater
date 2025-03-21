@@ -4,13 +4,14 @@ import TextField from "@mui/material/TextField";
 import { Box, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useRef } from "react";
+import { useLpContext } from "./LpProvider";
 
 const PropmtTextfield = () => {
-  // const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   // const [input, setInput] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   // const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  // // const [isPending, startTransition] = useTransition();
+  // const [isPending, startTransition] = useTransition();
   // const { title, setTitle, option } = useChatContext();
   // const actionMessageWithOptions = async (state: State, formData: FormData) => {
   //   if (title == "") {
@@ -62,7 +63,6 @@ const PropmtTextfield = () => {
   };
 
   const adjustHeight = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // setInput(e.target.value);
     if (textareaRef.current) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
@@ -73,43 +73,43 @@ const PropmtTextfield = () => {
   //   const trimmedValue = input.replace(/\r?\n/g, "").trim();
   //   setIsButtonDisabled(trimmedValue === "");
   // }, [input]);
+  const { urls, files } = useLpContext();
+  const handleSubmit = async () => {
+    // const userMessage = formData.get("userMessage") as string;
+    console.log(urls);
+    console.log(files);
 
-  // const handleSubmit = async (formData: FormData) => {
-  //   const userMessage = formData.get("userMessage") as string;
-
-  //   startTransition(async () => {
-  //     try {
-  //       setMessages((prev: string[]) => [...prev, userMessage]);
-  //       const result = await actionMessageWithOptions(state, formData);
-  //       if (result.message) {
-  //         setMessages((prev: string[]) => [...prev, result.message!]);
-  //       }
-  //       if (formRef.current) {
-  //         formRef.current.reset();
-  //       }
-  //       setInput("");
-  //       if (title == "") {
-  //         setTitle(userMessage);
-  //       }
-  //     } catch (e) {
-  //       console.error("送信エラー:", e);
-  //     }
-  //   });
-  // };
-
-  // console.log(placeholder);
+    // startTransition(async () => {
+    //   try {
+    //     setMessages((prev: string[]) => [...prev, userMessage]);
+    //     const result = await actionMessageWithOptions(state, formData);
+    //     if (result.message) {
+    //       setMessages((prev: string[]) => [...prev, result.message!]);
+    //     }
+    //     if (formRef.current) {
+    //       formRef.current.reset();
+    //     }
+    //     setInput("");
+    //     if (title == "") {
+    //       setTitle(userMessage);
+    //     }
+    //   } catch (e) {
+    //     console.error("送信エラー:", e);
+    //   }
+    // });
+  };
 
   return (
-    <form style={{ width: "100%" }}>
-      <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden", minHeight: "56px", borderRadius: "40px", width: "100%", transition: "height 0.2s ease" }}>
-        <TextField sx={textformstyle} placeholder="For example, an LP that presents a portfolio" multiline fullWidth onChange={adjustHeight} />
-        <Box sx={{ display: "flex", mr: 1, mb: 1, flexShrink: 0 }}>
-          <IconButton type="submit">
-            <SendIcon />
-          </IconButton>
-        </Box>
+    // <form style={{ width: "100%" }}>
+    <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden", minHeight: "56px", borderRadius: "40px", width: "100%", transition: "height 0.2s ease" }}>
+      <TextField sx={textformstyle} placeholder="For example, an LP that presents a portfolio" multiline fullWidth onChange={adjustHeight} />
+      <Box sx={{ display: "flex", mr: 1, mb: 1, flexShrink: 0 }}>
+        <IconButton onClick={() => handleSubmit()}>
+          <SendIcon />
+        </IconButton>
       </Box>
-    </form>
+    </Box>
+    // </form>
   );
 };
 

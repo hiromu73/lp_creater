@@ -7,12 +7,11 @@ type Props = {
   urls: string[],
   setUrls: (urls: string[]) => void,
 }
+
 const Urlfield = ({ urls, setUrls }: Props) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  // const [urls, setUrls] = useState<string[]>([]);
   const [target, setTarget] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  // const [showAlert, setShowAlert] = useState(false);
   const textformstyle: object = {
     p: 1,
     flexGrow: 1,
