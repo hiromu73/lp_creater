@@ -1,15 +1,25 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import { Box, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useRef } from "react";
 import { useLpContext } from "./LpProvider";
 
+// LPリクエストの型定義
+// interface LpRequest {
+//   prompt: string;
+//   files: File[];
+//   urls: string[];
+// }
+
 const PropmtTextfield = () => {
-  const formRef = useRef<HTMLFormElement>(null);
   // const [input, setInput] = useState("");
+  const { urls, files, setLoading, setResult, setActiveTab } = useLpContext();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [prompt, setPrompt] = useState<string>();
+  // const formRef = useRef<HTMLFormElement>(null);
+
   // const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   // const [isPending, startTransition] = useTransition();
   // const { title, setTitle, option } = useChatContext();
@@ -21,6 +31,10 @@ const PropmtTextfield = () => {
   //   }
   // };
   // const [state, dispatch] = useActionState(actionMessageWithOptions, inisialState);
+
+  /* <Button variant="contained" color="primary" fullWidth size="large" onClick={generateLP} disabled={loading || !prompt} sx={{ mt: 3 }}>
+            {loading ? "生成中..." : "Create"}
+          </Button> */
 
   const textformstyle: object = {
     p: 1,
@@ -63,40 +77,42 @@ const PropmtTextfield = () => {
   };
 
   const adjustHeight = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setPrompt(e.target.value);
     if (textareaRef.current) {
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
 
-  // const { isOpen } = useChatContext();
-  // useEffect(() => {
-  //   const trimmedValue = input.replace(/\r?\n/g, "").trim();
-  //   setIsButtonDisabled(trimmedValue === "");
-  // }, [input]);
-  const { urls, files } = useLpContext();
-  const handleSubmit = async () => {
-    // const userMessage = formData.get("userMessage") as string;
-    console.log(urls);
-    console.log(files);
+  const generateLP = async () => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("prompt", prompt!);
+      urls.forEach((url, index) => {
+        formData.append(`urls${index}`, url);
+      });
+      files.forEach((file, index) => {
+        formData.append(`files${index}`, file);
+      });
+      const response = await fetch("http://localhost:8000/api/generate-lp", {
+        method: "POST",
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
+        // FormDataを使用する場合はContent-Typeヘッダーを設定しない
+        body: formData,
+      });
+      const data = await response.json();
+      console.log(data);
 
-    // startTransition(async () => {
-    //   try {
-    //     setMessages((prev: string[]) => [...prev, userMessage]);
-    //     const result = await actionMessageWithOptions(state, formData);
-    //     if (result.message) {
-    //       setMessages((prev: string[]) => [...prev, result.message!]);
-    //     }
-    //     if (formRef.current) {
-    //       formRef.current.reset();
-    //     }
-    //     setInput("");
-    //     if (title == "") {
-    //       setTitle(userMessage);
-    //     }
-    //   } catch (e) {
-    //     console.error("送信エラー:", e);
-    //   }
-    // });
+      setResult(data);
+      setActiveTab(1);
+    } catch (error) {
+      console.error("Error generating LP:", error);
+      alert("LP生成中にエラーが発生しました。");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -104,7 +120,7 @@ const PropmtTextfield = () => {
     <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden", minHeight: "56px", borderRadius: "40px", width: "100%", transition: "height 0.2s ease" }}>
       <TextField sx={textformstyle} placeholder="For example, an LP that presents a portfolio" multiline fullWidth onChange={adjustHeight} />
       <Box sx={{ display: "flex", mr: 1, mb: 1, flexShrink: 0 }}>
-        <IconButton onClick={() => handleSubmit()}>
+        <IconButton onClick={() => generateLP()}>
           <SendIcon />
         </IconButton>
       </Box>

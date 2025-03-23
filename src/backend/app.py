@@ -1,5 +1,6 @@
 
-from fastapi import FastAPI, HTTPException
+from typing import List
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.chains import LLMChain
@@ -29,12 +30,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# リクエストモデルの定義
-class LPRequest(BaseModel):
-    prompt: str
-    style: str = "modern"  # デフォルトスタイル
-    elements: list = ["header", "hero", "features", "testimonials", "cta", "footer"]
-
 # レスポンスモデルの定義
 class LPResponse(BaseModel):
     html: str
@@ -42,7 +37,7 @@ class LPResponse(BaseModel):
     preview_image: str = ""
 
 # LangChainを使ったLP生成
-def generate_lp_with_langchain(prompt: str, style: str, elements: list):
+def generate_lp_with_langchain(prompt: str, files: list, urls: list):
 
     llm = OpenAI(temperature=0.7, model="gpt-3.5-turbo-instruct", openai_api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -50,9 +45,9 @@ def generate_lp_with_langchain(prompt: str, style: str, elements: list):
     template = """
     あなたはLPデザイナーです。以下の要件に基づいてランディングページのHTMLとCSSを生成してください。
 
-    要件: {prompt}
-    スタイル: {style}
-    含める要素: {elements}
+    requirement: {prompt}
+    Reference URL: {urls}
+    File to be included: {files}
 
     以下の形式でHTMLとCSSを返してください:
 
@@ -68,13 +63,13 @@ def generate_lp_with_langchain(prompt: str, style: str, elements: list):
     """
 
     prompt_template = PromptTemplate(
-        input_variables=["prompt", "style", "elements"],
+        input_variables=["prompt", "urls", "files"],
         template=template
     )
 
     # チェーンの作成と実行
     chain = LLMChain(llm=llm, prompt=prompt_template)
-    result = chain.run(prompt=prompt, style=style, elements=elements)
+    result = chain.run(prompt=prompt, urls=urls, files=files)
     print("result")
     print(result)
     # 結果の解析
@@ -87,14 +82,17 @@ def generate_lp_with_langchain(prompt: str, style: str, elements: list):
     }
 
 @app.post("/api/generate-lp", response_model=LPResponse)
-async def generate_lp(request: LPRequest):
+async def generate_lp(
+    prompt: str = Form(...),
+    files: List[UploadFile] = File(None),
+    urls: List[str] = Form(None)):
 
     try:
         # LangChainでLP生成
         result = generate_lp_with_langchain(
-            request.prompt,
-            request.style,
-            request.elements
+            prompt,
+            files,
+            urls
         )
         print("------------")
         print(result["html"])

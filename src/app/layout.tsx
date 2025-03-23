@@ -21,29 +21,29 @@ export default function RootLayout({
     () =>
       createTheme({
         components: {
-          // MuiCssBaseline: {
-          //   styleOverrides: `
-          //       ::-webkit-scrollbar{
-          //           width: 5px;
-          //           display: none;
-          //       },
-          //       /* Firefox */
-          //       html {
-          //           scrollbar-width: none;
-          //       }
-          //       /* IE, Edge */
-          //       body {
-          //           -ms-overflow-style: none;
-          //       }
-          //       :hover::-webkit-scrollbar {
-          //       display: block;
-          //       }
-          //       ::-webkit-scrollbar-thumb {
-          //           background-color: #676767;
-          //           border-radius: 20px;
-          //       }
-          //       `,
-          // },
+          MuiCssBaseline: {
+            styleOverrides: `
+                ::-webkit-scrollbar{
+                    width: 5px;
+                    display: none;
+                },
+                /* Firefox */
+                html {
+                    scrollbar-width: none;
+                }
+                /* IE, Edge */
+                body {
+                    -ms-overflow-style: none;
+                }
+                :hover::-webkit-scrollbar {
+                display: block;
+                }
+                ::-webkit-scrollbar-thumb {
+                    background-color: #676767;
+                    border-radius: 20px;
+                }
+                `,
+          },
         },
         palette: {
           mode: "dark",
@@ -71,12 +71,12 @@ export default function RootLayout({
       <body className={`${geistSans.variable}`}>
         <ThemeProvider theme={darkTheme}>
           <LpProvider>
-          <Box sx={{ height: "100vh", width: "100%" }}>
-            <CssBaseline />
-            <Header />
-            {children}
+            <Box sx={{ height: "100vh", width: "100%" }}>
+              <CssBaseline />
+              <Header />
+              {children}
             </Box>
-            </LpProvider>
+          </LpProvider>
         </ThemeProvider>
       </body>
     </html>

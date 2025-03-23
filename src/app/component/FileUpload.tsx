@@ -23,8 +23,6 @@ const FileUpload = ({ files, setFiles }: props) => {
 
     acceptedFiles.forEach((file) => {
       const isDuplicate = files.some((existingFile) => existingFile.name === file.name);
-
-
       if (isDuplicate) {
         duplicates.push(file);
       } else {
@@ -62,7 +60,7 @@ const FileUpload = ({ files, setFiles }: props) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "application/pdf": [".pdf"], // PDFファイルのみ許可
+      "application/pdf": [".pdf"],
     },
     multiple: true, // 複数ファイルを許可
   });

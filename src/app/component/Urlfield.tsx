@@ -82,7 +82,7 @@ const Urlfield = ({ urls, setUrls }: Props) => {
       </Box>
       <Dialog open={dialogOpen} onClose={handleOk}>
         <DialogContent>
-          <Typography>urlを入力して下さい</Typography>
+          <Typography>urlを入力して下さい </Typography>
         </DialogContent>
         <DialogActions>
           <Button color="info" onClick={handleOk}>
