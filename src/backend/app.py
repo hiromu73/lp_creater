@@ -94,8 +94,11 @@ async def generate_lp(
             files,
             urls
         )
+        
         print("------------")
+        print("--html--")
         print(result["html"])
+        print("--css--")
         print(result["css"])
 
         return LPResponse(

@@ -6,31 +6,10 @@ import SendIcon from "@mui/icons-material/Send";
 import { useRef } from "react";
 import { useLpContext } from "./LpProvider";
 
-// LPリクエストの型定義
-// interface LpRequest {
-//   prompt: string;
-//   files: File[];
-//   urls: string[];
-// }
-
 const PropmtTextfield = () => {
-  // const [input, setInput] = useState("");
   const { urls, files, setLoading, setResult, setActiveTab } = useLpContext();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [prompt, setPrompt] = useState<string>();
-  // const formRef = useRef<HTMLFormElement>(null);
-
-  // const [isButtonDisabled, setIsButtonDisabled] = useState(true);
-  // const [isPending, startTransition] = useTransition();
-  // const { title, setTitle, option } = useChatContext();
-  // const actionMessageWithOptions = async (state: State, formData: FormData) => {
-  //   if (title == "") {
-  //     return actionMessage(state, formData, option);
-  //   } else {
-  //     return actionMessage(state, formData);
-  //   }
-  // };
-  // const [state, dispatch] = useActionState(actionMessageWithOptions, inisialState);
 
   /* <Button variant="contained" color="primary" fullWidth size="large" onClick={generateLP} disabled={loading || !prompt} sx={{ mt: 3 }}>
             {loading ? "生成中..." : "Create"}
@@ -116,7 +95,6 @@ const PropmtTextfield = () => {
   };
 
   return (
-    // <form style={{ width: "100%" }}>
     <Box sx={{ display: "flex", alignItems: "center", overflow: "hidden", minHeight: "56px", borderRadius: "40px", width: "100%", transition: "height 0.2s ease" }}>
       <TextField sx={textformstyle} placeholder="For example, an LP that presents a portfolio" multiline fullWidth onChange={adjustHeight} />
       <Box sx={{ display: "flex", mr: 1, mb: 1, flexShrink: 0 }}>
@@ -125,7 +103,6 @@ const PropmtTextfield = () => {
         </IconButton>
       </Box>
     </Box>
-    // </form>
   );
 };
 

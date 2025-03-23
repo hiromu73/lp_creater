@@ -8,6 +8,7 @@ import CodeTwoToneIcon from "@mui/icons-material/CodeTwoTone";
 
 const Responseare = () => {
   const { result, activeTab, setActiveTab, setResult } = useLpContext();
+
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
@@ -32,7 +33,7 @@ const Responseare = () => {
 
   return (
     <>
-      <Box >
+      <Box>
         <Paper sx={{ mt: 4, p: 3 }}>
           <Tabs value={activeTab} onChange={handleTabChange} centered>
             <Tab icon={<PageviewTwoToneIcon />} label="Preview" />
@@ -44,8 +45,8 @@ const Responseare = () => {
       <Box>
         {activeTab === 0 && (
           <Box sx={{ mt: 3 }}>
-            <Paper sx={{ mt: 4, p: 3, width: "80vw" }}>
-              <Box sx={{ width: "100%", height: "600px" }}>
+            <Paper sx={{ mt: 4, p: 3, width: "90vw", height: "100%" }}>
+              <Box sx={{ width: "100%" }}>
                 <iframe
                   srcDoc={`
                       <!DOCTYPE html>
