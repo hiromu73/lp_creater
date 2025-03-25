@@ -1,14 +1,14 @@
 "use client";
 // import { useState } from "react";
 import { Box, Paper, Tabs, Tab, TextField } from "@mui/material";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useLpContext } from "./LpProvider";
 import PageviewTwoToneIcon from "@mui/icons-material/PageviewTwoTone";
 import CodeTwoToneIcon from "@mui/icons-material/CodeTwoTone";
 
 const Responseare = () => {
   const { result, activeTab, setActiveTab, setResult } = useLpContext();
-
+  const scrollmRef = useRef<HTMLDivElement>(null);
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
@@ -30,10 +30,13 @@ const Responseare = () => {
       });
     }
   };
+  useEffect(() => {
+    scrollmRef?.current?.scrollIntoView();
+  }, []);
 
   return (
     <>
-      <Box>
+      <Box ref={scrollmRef}>
         <Paper sx={{ mt: 4, p: 3 }}>
           <Tabs value={activeTab} onChange={handleTabChange} centered>
             <Tab icon={<PageviewTwoToneIcon />} label="Preview" />

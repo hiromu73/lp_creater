@@ -11,6 +11,7 @@ import Loading from "../loading";
 
 const Promptare = () => {
   const { urls, setUrls, files, setFiles, result, loading } = useLpContext();
+
   return (
     <>
       {loading && <Loading />}
