@@ -6,6 +6,7 @@ import { Box, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { useMemo } from "react";
 import Header from "./component/Header";
 import { LpProvider } from "./component/LpProvider";
+import { NextAuthProvider } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -70,13 +71,15 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable}`}>
         <ThemeProvider theme={darkTheme}>
-          <LpProvider>
-            <Box sx={{ height: "100vh", width: "100%" }}>
-              <CssBaseline />
-              <Header />
-              {children}
-            </Box>
-          </LpProvider>
+          <NextAuthProvider>
+            <LpProvider>
+              <Box sx={{ height: "100vh", width: "100%" }}>
+                <CssBaseline />
+                <Header />
+                {children}
+              </Box>
+            </LpProvider>
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -7,7 +7,7 @@ import FileUpload from "./FileUpload";
 import { useLpContext } from "./LpProvider";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import Responseare from "./Responseare";
-import Loading from "../loading";
+import Loading from "./Loading";
 
 const Promptare = () => {
   const { urls, setUrls, files, setFiles, result, loading } = useLpContext();

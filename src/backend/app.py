@@ -76,6 +76,9 @@ def generate_lp_with_langchain(prompt: str, files: list, urls: list):
     html_part = result.split("HTML:")[0].split("```html")[0].split("```")[0].strip()
     css_part = result.split("CSS:")[0].split("```css")[0].split("```")[0].strip()
 
+    print("html_part")
+    print(result.split("HTML:")[0])
+    print(result.split("CSS:")[0])
     return {
         "html": html_part,
         "css": css_part
@@ -94,7 +97,7 @@ async def generate_lp(
             files,
             urls
         )
-        
+
         print("------------")
         print("--html--")
         print(result["html"])

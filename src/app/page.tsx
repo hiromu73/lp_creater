@@ -1,129 +1,16 @@
-"use client";
-// import { useState } from "react";
 import { Box, Typography } from "@mui/material";
 import Promptare from "./component/Promptare";
+import { authOptions } from "@/utils/auth-options";
+import { getServerSession } from "next-auth/next";
+import { redirect } from "next/navigation";
 
+const Home = async () => {
+  const session = await getServerSession(authOptions);
 
-// LPリクエストの型定義
-// interface LPRequest {
-//   prompt: string;
-//   style: string;
-//   elements: string[];
-// }
-
-// // LPレスポンスの型定義
-// interface LPResponse {
-//   html: string;
-//   css: string;
-//   preview_image?: string;
-// }
-
-export default function Home() {
-  // const [prompt, setPrompt] = useState("");
-  // const [style, setStyle] = useState("modern");
-  // const [elements, setElements] = useState(["header", "hero", "features", "testimonials", "cta", "footer"]);
-  // const [loading, setLoading] = useState(false);
-  // const [result, setResult] = useState<LPResponse | null>(null);
-  // const [activeTab, setActiveTab] = useState(0);
-
-  // // 利用可能なスタイル一覧
-  // const availableStyles = ["modern", "minimalist", "corporate", "creative", "bold"];
-
-  // // 利用可能な要素一覧
-  // const availableElements = ["header", "hero", "features", "benefits", "testimonials", "pricing", "cta", "faq", "about", "contact", "footer"];
-
-  // LP生成リクエスト
-  // const generateLP = async () => {
-  //   setLoading(true);
-  //   console.log("生成実行");
-  //   console.log(prompt);
-  //   console.log(style);
-  //   console.log(elements);
-
-  //   try {
-  //     const response = await fetch("http://127.0.0.1:8000/api/generate-lp", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         prompt,
-  //         style,
-  //         elements,
-  //       } as LPRequest),
-  //     });
-  //     const data = await response.json();
-  //     console.log(`data = ${data}`);
-
-  //     setResult(data);
-  //     setActiveTab(1);
-  //   } catch (error) {
-  //     console.error("Error generating LP:", error);
-  //     alert("LP生成中にエラーが発生しました。");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // HTML編集用のハンドラー
-  // const handleHtmlChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   if (result) {
-  //     setResult({
-  //       ...result,
-  //       html: e.target.value,
-  //     });
-  //   }
-  // };
-
-  // CSS編集用のハンドラー
-  // const handleCssChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-  //   if (result) {
-  //     setResult({
-  //       ...result,
-  //       css: e.target.value,
-  //     });
-  //   }
-  // };
-
-  // // タブ変更ハンドラー
-  // const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
-  //   setActiveTab(newValue);
-  // };
-
-  // LPをダウンロード
-  // const handleDownload = () => {
-  //   if (!result) return;
-
-  //   const htmlContent = `
-  //     <!DOCTYPE html>
-  //     <html lang="ja">
-  //     <head>
-  //       <meta charset="UTF-8">
-  //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  //       <title>Generated Landing Page</title>
-  //       <style>${result.css}</style>
-  //     </head>
-  //     <body>
-  //       ${result.html}
-  //     </body>
-  //     </html>
-  //   `;
-
-  // console.log(htmlContent);
-
-  // const blob = new Blob([htmlContent], { type: "text/html" });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement("a");
-  //   a.href = url;
-  //   a.download = "landing-page.html";
-  //   document.body.appendChild(a);
-  //   a.click();
-  //   document.body.removeChild(a);
-  //   URL.revokeObjectURL(url);
-  // };
-
-  // console.log(result?.html);
-  // console.log(result?.css);
+  // 未認証の場合はサインインページへ
+  if (!session) {
+    redirect("/auth/signin");
+  }
 
   return (
     <Box sx={{ height: "100%" }}>
@@ -133,8 +20,8 @@ export default function Home() {
       <Promptare />
     </Box>
   );
-}
-
+};
+export default Home;
 /* <Header /> */
 
 /* <Paper sx={{ m: 2, p: 2 }}>

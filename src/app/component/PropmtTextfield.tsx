@@ -85,7 +85,7 @@ const PropmtTextfield = () => {
       console.log(data);
 
       setResult(data);
-      setActiveTab(1);
+      setActiveTab(0);
     } catch (error) {
       console.error("Error generating LP:", error);
       alert("LP生成中にエラーが発生しました。");
