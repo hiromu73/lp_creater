@@ -73,7 +73,11 @@ const PropmtTextfield = () => {
       files.forEach((file, index) => {
         formData.append(`files${index}`, file);
       });
-      const response = await fetch("http://localhost:8000/api/generate-lp", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      console.log("http://localhost");
+      console.log(apiUrl);
+
+      const response = await fetch(`${apiUrl}/api/generate-lp`, {
         method: "POST",
         // headers: {
         //   "Content-Type": "application/json",
@@ -81,6 +85,7 @@ const PropmtTextfield = () => {
         // FormDataを使用する場合はContent-Typeヘッダーを設定しない
         body: formData,
       });
+      signal: AbortSignal.timeout(30000);
       const data = await response.json();
       console.log(data);
 

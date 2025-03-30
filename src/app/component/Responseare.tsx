@@ -5,6 +5,7 @@ import React, { useEffect, useRef } from "react";
 import { useLpContext } from "./LpProvider";
 import PageviewTwoToneIcon from "@mui/icons-material/PageviewTwoTone";
 import CodeTwoToneIcon from "@mui/icons-material/CodeTwoTone";
+import IosShareIcon from '@mui/icons-material/IosShare';
 
 const Responseare = () => {
   const { result, activeTab, setActiveTab, setResult } = useLpContext();
@@ -41,17 +42,16 @@ const Responseare = () => {
           <Tabs value={activeTab} onChange={handleTabChange} centered>
             <Tab icon={<PageviewTwoToneIcon />} label="Preview" />
             <Tab icon={<CodeTwoToneIcon />} label="Code" disabled={!result} />
-            <Tab label="Export" disabled={!result} />
+            <Tab icon={<IosShareIcon />} label="Export" disabled={!result}  />
           </Tabs>
         </Paper>
       </Box>
-      <Box>
+      <Box sx={{ height: "100%" }}>
         {activeTab === 0 && (
-          <Box sx={{ mt: 3 }}>
-            <Paper sx={{ mt: 4, p: 3, width: "90vw", height: "100%" }}>
-              <Box sx={{ width: "100%" }}>
-                <iframe
-                  srcDoc={`
+          <Box sx={{ mt: 3, height: "100%"}}>
+            <Box sx={{ width: "95vw", height: "100%" }}>
+              <iframe
+                srcDoc={`
                       <!DOCTYPE html>
                       <html>
                         <head>
@@ -62,16 +62,15 @@ const Responseare = () => {
                         </body>
                       </html>
                     `}
-                  style={{ width: "100%", height: "100%", border: "none" }}
-                  title="LP Preview"
-                />
-              </Box>
-            </Paper>
+                style={{ width: "100%", height: "100%", border: "none" }}
+                title="LP Preview"
+              />
+            </Box>
           </Box>
         )}
         {activeTab === 1 && (
           <Box sx={{ mt: 3 }}>
-            <Paper sx={{ mt: 4, p: 3, width: "80vw" }}>
+            <Paper sx={{ mt: 4, p: 3, width: "90vw" }}>
               <TextField multiline rows={10} fullWidth variant="outlined" value={result!.html} onChange={handleHtmlChange} />
               <TextField multiline rows={10} fullWidth variant="outlined" value={result!.css} onChange={handleCssChange} />
             </Paper>

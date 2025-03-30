@@ -48,7 +48,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async redirect({ url, baseUrl }) {
       // ログイン成功後のリダイレクト先を指定
-      console.log(`aaa - ${baseUrl}`);
+      console.log(`auth-options - ${baseUrl}`);
       if (url.startsWith(baseUrl)) {
         return url;
       }

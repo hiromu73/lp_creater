@@ -8,6 +8,7 @@ from langchain.prompts import PromptTemplate
 from langchain.llms import OpenAI
 import os
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
@@ -36,30 +37,67 @@ class LPResponse(BaseModel):
     css: str
     preview_image: str = ""
 
-# LangChainを使ったLP生成
-def generate_lp_with_langchain(prompt: str, files: list, urls: list):
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
-    llm = OpenAI(temperature=0.7, model="gpt-3.5-turbo-instruct", openai_api_key=os.getenv("OPENAI_API_KEY"))
+# 実行確認
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+@app.on_event("startup")
+async def startup_event():
+    logger.debug("Application startup")
+
+@app.get("/health-check")
+async def health_check():
+    return {"status": "ok"}
+
+# LangChainを使ったLP生成
+async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
+
+    llm = OpenAI(temperature=0.2, model="gpt-3.5-turbo-instruct", openai_api_key=os.getenv("OPENAI_API_KEY"),max_tokens=2000 )
 
     # プロンプトテンプレートの作成
     template = """
-    あなたはLPデザイナーです。以下の要件に基づいてランディングページのHTMLとCSSを生成してください。
+    You are an expert front-end developer specializing in creating landing pages.
+    Create a professional landing page with HTML and CSS based on the following requirements.
 
-    requirement: {prompt}
-    Reference URL: {urls}
-    File to be included: {files}
+    Requirements: {prompt}
+    Reference URLs: {urls}
+    Files to include: {files}
 
-    以下の形式でHTMLとCSSを返してください:
+    Important Guidelines:
+    1. Use semantic HTML5 elements
+    2. Make the design responsive
+    3. Follow modern CSS best practices
+    4. Ensure accessibility standards
+    5. Optimize for performance
 
-    HTML:
+    Required Sections:
+    - Header with navigation
+    - Hero section
+    - Main content area
+    - Call to action
+    - Footer
+
+    You must provide both HTML and CSS code separately, strictly following this format:
+
+    HTML CODE:
     ```html
-    (ここにHTML)
+    [Your HTML code here]
     ```
 
-    CSS:
+    CSS CODE:
     ```css
-    (ここにCSS)
+    [Your CSS code here]
     ```
+
+    Ensure that:
+    1. Both HTML and CSS are complete and well-formatted
+    2. CSS selectors match the HTML elements
+    3. All sections are properly styled
+    4. The design is modern and professional
     """
 
     prompt_template = PromptTemplate(
@@ -70,19 +108,50 @@ def generate_lp_with_langchain(prompt: str, files: list, urls: list):
     # チェーンの作成と実行
     chain = LLMChain(llm=llm, prompt=prompt_template)
     result = chain.run(prompt=prompt, urls=urls, files=files)
-    print("result")
-    print(result)
-    # 結果の解析
-    html_part = result.split("HTML:")[0].split("```html")[0].split("```")[0].strip()
-    css_part = result.split("CSS:")[0].split("```css")[0].split("```")[0].strip()
 
-    print("html_part")
-    print(result.split("HTML:")[0])
-    print(result.split("CSS:")[0])
-    return {
-        "html": html_part,
-        "css": css_part
-    }
+    print("--result--")
+    print(result)
+    print("------resultEnd------")
+    # print(result)
+    try:
+        # 結果の解析を改善
+        html_css_split = result.split("HTML CODE:")
+        if len(html_css_split) > 1:
+            print(len(html_css_split))
+            print("--html_css_split[1].split()[0]---")
+            print(html_css_split[1].split("CSS CODE:")[0])
+            print("------------")
+            print("-------html_css_split[1].split()[1]-----")
+            print(html_css_split[1].split("CSS CODE:")[1])
+            print("------------")
+
+            html_part = html_css_split[1].split("CSS CODE:")[0]
+            css_part = html_css_split[1].split("CSS CODE:")[1]
+
+            # コードブロックの抽出を改善
+            html_content = html_part.split("```html")[1].split("```")[0].strip()
+            css_content = css_part.split("```css")[1].split("```")[0].strip()
+        else:
+            # バックアップパース方法
+            html_content = result.split("```html")[1].split("```")[0].strip()
+            css_content = result.split("```css")[1].split("```")[0].strip()
+
+        # 結果の検証
+        if not html_content or not css_content:
+            raise ValueError("HTML or CSS content is missing")
+
+        return {
+            "html": html_content,
+            "css": css_content
+        }
+
+    except Exception as e:
+            logger.error(f"Error parsing LLM response: {e}")
+            logger.debug(f"Raw LLM response: {result}")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to generate valid HTML and CSS"
+            )
 
 @app.post("/api/generate-lp", response_model=LPResponse)
 async def generate_lp(
@@ -90,9 +159,13 @@ async def generate_lp(
     files: List[UploadFile] = File(None),
     urls: List[str] = Form(None)):
 
+    logger.debug("Received generate-lp request")
+
     try:
+        logger.debug("Processing complete")
+
         # LangChainでLP生成
-        result = generate_lp_with_langchain(
+        result = await generate_lp_with_langchain(
             prompt,
             files,
             urls
@@ -101,12 +174,16 @@ async def generate_lp(
         print("------------")
         print("--html--")
         print(result["html"])
+        print("------------")
         print("--css--")
         print(result["css"])
+        print("------------")
 
         return LPResponse(
             html=result["html"],
             css=result["css"]
         )
+
     except Exception as e:
+        logger.error(f"Error: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))

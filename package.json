@@ -15,9 +15,11 @@
     "@mui/joy": "^5.0.0-beta.52",
     "@mui/material": "^6.4.8",
     "next": "15.2.1",
+    "next-auth": "^4.24.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",
+    "react-icons": "^5.5.0",
     "use-count-up": "^3.0.1"
   },
   "devDependencies": {
