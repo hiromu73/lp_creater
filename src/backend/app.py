@@ -60,8 +60,11 @@ async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
 
     # プロンプトテンプレートの作成
     template = """
-    You are an expert front-end developer specializing in creating landing pages.
-    Create a professional landing page with HTML and CSS based on the following requirements.
+    You are a front-end developer specializing in the creation of landing pages.
+    Please create a modern and professional landing page using HTML, CSS and ui libraries based on the following requirements.
+    Also, please consider directory structure.
+    Use {urls} as a reference URL if it exists.
+    {files} must be included if present
 
     Requirements: {prompt}
     Reference URLs: {urls}
@@ -73,6 +76,7 @@ async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
     3. Follow modern CSS best practices
     4. Ensure accessibility standards
     5. Optimize for performance
+    6.
 
     Required Sections:
     - Header with navigation
