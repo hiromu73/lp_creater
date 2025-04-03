@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Button, Dialog, DialogActions, DialogContent, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import { useRef } from "react";
 import { useLpContext } from "./LpProvider";
@@ -10,10 +10,7 @@ const PropmtTextfield = () => {
   const { urls, files, setLoading, setResult, setActiveTab } = useLpContext();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [prompt, setPrompt] = useState<string>();
-
-  /* <Button variant="contained" color="primary" fullWidth size="large" onClick={generateLP} disabled={loading || !prompt} sx={{ mt: 3 }}>
-            {loading ? "生成中..." : "Create"}
-          </Button> */
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const textformstyle: object = {
     p: 1,
@@ -62,21 +59,39 @@ const PropmtTextfield = () => {
     }
   };
 
+  const handleOk = () => {
+    setDialogOpen(false);
+  };
+
   const generateLP = async () => {
+    if (prompt === undefined || prompt === "") {
+      setDialogOpen(true);
+      return;
+    }
     setLoading(true);
+
     try {
       const formData = new FormData();
       formData.append("prompt", prompt!);
-      urls.forEach((url, index) => {
-        formData.append(`urls${index}`, url);
-      });
-      files.forEach((file, index) => {
-        formData.append(`files${index}`, file);
-      });
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      console.log("http://localhost");
-      console.log(apiUrl);
 
+      if (urls.length > 0) {
+        urls.forEach((url) => {
+          formData.append("urls", url);
+        });
+      }
+
+      if (files.length > 0) {
+        files.forEach((file) => {
+          formData.append("files", file);
+        });
+      }
+
+      // デバッグ用にFormDataの内容を表示
+      console.log("FormData contents before sending:");
+      console.log(...formData.entries());
+      console.log("FormData contents:end");
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiUrl}/api/generate-lp`, {
         method: "POST",
         // headers: {
@@ -85,8 +100,9 @@ const PropmtTextfield = () => {
         // FormDataを使用する場合はContent-Typeヘッダーを設定しない
         body: formData,
       });
-      signal: AbortSignal.timeout(30000);
+
       const data = await response.json();
+      console.log("data");
       console.log(data);
 
       setResult(data);
@@ -107,6 +123,16 @@ const PropmtTextfield = () => {
           <SendIcon />
         </IconButton>
       </Box>
+      <Dialog open={dialogOpen} onClose={handleOk}>
+        <DialogContent>
+          <Typography>promptを入力して下さい </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button color="info" onClick={handleOk}>
+            ok
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

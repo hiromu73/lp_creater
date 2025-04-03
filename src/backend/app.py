@@ -53,22 +53,50 @@ async def startup_event():
 async def health_check():
     return {"status": "ok"}
 
+def format_urls_for_prompt(urls: list) -> str:
+    """URLsをプロンプト用に整形"""
+    if not urls or not any(urls):
+        return "No reference URLs provided"
+    return "\n".join([f"- {url}" for url in urls if url])
+
+def format_files_for_prompt(files: list) -> str:
+    """ファイル情報をプロンプト用に整形"""
+    if not files or not any(files):
+        return "No files provided"
+    return "\n".join([f"- {file.filename}" for file in files if file])
+
 # LangChainを使ったLP生成
 async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
 
-    llm = OpenAI(temperature=0.2, model="gpt-3.5-turbo-instruct", openai_api_key=os.getenv("OPENAI_API_KEY"),max_tokens=2000 )
+    # 入力値の整形
+    formatted_urls = format_urls_for_prompt(urls)
+    formatted_files = format_files_for_prompt(files)
+
+    logger.debug("Formatted input values:")
+    logger.debug(f"URLs:\n{formatted_urls}")
+    logger.debug(f"Files:\n{formatted_files}")
+
+    # 入力値のログ出力
+    logger.debug("Input values:")
+    logger.debug(f"Prompt: {prompt}")
+    logger.debug(f"Files: {files}")
+    logger.debug(f"URLs: {urls}")
+
+    llm = OpenAI(temperature=0.2, model="gpt-3.5-turbo-instruct", openai_api_key=os.getenv("OPENAI_API_KEY"),max_tokens=2500 )
 
     # プロンプトテンプレートの作成
     template = """
     You are a front-end developer specializing in the creation of landing pages.
-    Please create a modern and professional landing page using HTML, CSS and ui libraries based on the following requirements.
-    Also, please consider directory structure.
-    Use {urls} as a reference URL if it exists.
-    {files} must be included if present
+    Create a landing page based on the following information:
 
-    Requirements: {prompt}
-    Reference URLs: {urls}
-    Files to include: {files}
+    CLIENT REQUIREMENTS:
+    {prompt}
+
+    REFERENCE URLS:
+    {urls}
+
+    FILES TO INCLUDE:
+    {files}
 
     Important Guidelines:
     1. Use semantic HTML5 elements
@@ -76,7 +104,6 @@ async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
     3. Follow modern CSS best practices
     4. Ensure accessibility standards
     5. Optimize for performance
-    6.
 
     Required Sections:
     - Header with navigation
@@ -102,6 +129,39 @@ async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
     2. CSS selectors match the HTML elements
     3. All sections are properly styled
     4. The design is modern and professional
+
+    Design Guidelines:
+    1. color scheme:
+    - If colors are specified in the promt : Follow the specified colors.
+    - For bright/corporate themes: use white as the base color, with gray accents.
+    - Primary colors should match the mood (e.g., blue for corporate, green for eco).
+    - Keep contrast high for readability.
+    - Use a bright, professional color scheme for the corporate site. 2.
+    - Use {urls} as a reference if available.
+
+    Layout Requirements
+    - Clean, modern design
+    - Responsive layout (mobile first approach)
+    - Appropriate spacing and padding
+    - Clear visual hierarchy
+    - Maximum width container for content 3.
+    - {urls} for reference if available
+
+    3. typography
+    - Professional font choices (e.g., “Inter”, “Roboto”, system-ui)
+    - Clear heading hierarchy
+    - Readable text size and line height
+    - {urls} for reference if available
+
+    4. components to include
+    - Sticky navigation headers
+    - Hero section with clear value proposition
+    - Feature section with icons and images
+    - Testimonials and social proof
+    - Call-to-action section
+    - Contact information
+    - Modern
+    - {urls} for reference if available
     """
 
     prompt_template = PromptTemplate(
@@ -109,13 +169,23 @@ async def generate_lp_with_langchain(prompt: str, files: list, urls: list):
         template=template
     )
 
+    # 実際に生成されるプロンプトを確認
+    final_prompt = prompt_template.format(
+        prompt=prompt,
+        urls=formatted_urls,
+        files=formatted_files
+    )
+    logger.debug("Generated prompt:")
+    logger.debug(final_prompt)
+    logger.debug("===================")
+
     # チェーンの作成と実行
     chain = LLMChain(llm=llm, prompt=prompt_template)
-    result = chain.run(prompt=prompt, urls=urls, files=files)
+    result = chain.run(prompt=prompt, urls=formatted_urls, files=formatted_files)
 
-    print("--result--")
-    print(result)
-    print("------resultEnd------")
+    # print("--result--")
+    # print(result)
+    # print("------resultEnd------")
     # print(result)
     try:
         # 結果の解析を改善
@@ -163,16 +233,16 @@ async def generate_lp(
     files: List[UploadFile] = File(None),
     urls: List[str] = Form(None)):
 
-    logger.debug("Received generate-lp request")
+    logger.debug("Received request with:")
+    logger.debug(f"Prompt: {prompt}")
+    logger.debug(f"Files: {[f.filename for f in files] if files else []}")
+    logger.debug(f"URLs: {urls if urls else []}")
 
     try:
-        logger.debug("Processing complete")
-
-        # LangChainでLP生成
         result = await generate_lp_with_langchain(
             prompt,
-            files,
-            urls
+            files=files if files else [],
+            urls=urls if urls else []
         )
 
         print("------------")
